@@ -1,0 +1,3 @@
+Link for the project spec github
+
+https://gitlab.umich.edu/eecs281/project-1-treasure-hunt
