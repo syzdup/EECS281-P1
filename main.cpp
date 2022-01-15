@@ -15,4 +15,7 @@ int main(int argc, char *argv[]) {
 
     Option_handler oh;
     oh.get_options(argc, argv); 
+
+    // TODO: check that all member functions of Option_handler return the correct output when given certain arguments
+    read_map();
 }

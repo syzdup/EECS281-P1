@@ -5,6 +5,8 @@
 #include <string>
 #include <getopt.h>
 
+// class to handle all options and args provided
+
 class Option_handler {
 
 private:
@@ -140,4 +142,23 @@ public:
 // implementation for reading in a map
 // vector<vector<point>> 
 // point: struct with land_type, been_visited
+// file will be map or list of grid coords
 
+// when the location added to the container is treasure, stop the search
+
+struct Spot {
+    // type
+    // note: unsure if there is an easier way to represent the 'type' of spot
+    // type 0: 
+    int spot_type;
+    // discovered
+    bool discovered;
+};
+
+void read_map() {
+    char map_type;
+    std::cin >> map_type;
+    std::cout << "Map type: " << map_type << "\n";
+}
+
+// 'investigation'
