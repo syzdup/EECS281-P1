@@ -30,11 +30,11 @@ int main(int argc, char *argv[]) {
     oh.get_options(argc, argv);
 
     // for debug only, delete later 
-    DEBUG_check_options(oh);
+    //DEBUG_check_options(oh);
 
     // read the map into private data structure of option handler
     oh.read_map();
 
     // print_map() test run
-    oh.print_map();
+    //oh.print_map();
 }

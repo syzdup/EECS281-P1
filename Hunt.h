@@ -5,6 +5,9 @@
 #include <vector>
 #include <getopt.h>
 
+// for debug
+#include <typeinfo>
+
 // class to handle all options and args provided. also reads in input files and stores data
 
 class Option_handler {
@@ -43,7 +46,6 @@ private:
     // private functions that do work for public "read_map()"
     void read_map_file() {
         std::cin >> map_size;
-        std::cout << "Map size: " << map_size << "\n";
         std::string row;
         // counter to keep track of row
         int r_count = 0;
@@ -72,6 +74,36 @@ private:
 
     void read_list_file() {
         std::cin >> map_size;
+
+        grid.resize(map_size);
+        for(int i = 0; i < map_size; ++i) {
+            grid[i].resize(map_size);
+        }
+
+        std::string junk;
+        getline(std::cin, junk);
+
+        int r;
+        int c;
+        char spot_type;
+        while(std::cin >> r >> c >> spot_type) {
+            // TODO: delete debug line
+            //std::cout << r << " " << c << " " << spot_type << "\n"; 
+            grid[r][c].spot_type = spot_type;
+        }
+        // fill in blank spots with water (can i check if the spot has a blank value rather than checking if it is each of the types? would be faster prob)
+        for(int i = 0; i < map_size; ++i) {
+            for(int j = 0; j < map_size; ++j) {
+                if(grid[i][j].spot_type != 'o' && grid[i][j].spot_type != '$' && grid[i][j].spot_type != '@') {
+                    grid[i][j].spot_type = '.';
+                }
+            }
+        }
+    } // read_list_file()
+
+    // print help function
+    void print_help() {
+        std::cout << "usage: ./hunt [options] < inputfile\n";
     }
 
 public:
@@ -162,10 +194,7 @@ public:
         }
     }
 
-    // functions
-    void print_help() {
-        std::cout << "usage: ./hunt [options] < inputfile\n";
-    }
+    // functions to return options
 
     std::string get_captain_type() {
         return captain_type;
@@ -204,11 +233,9 @@ public:
         // store the rest of the map based on map_type
         if(map_type == 'M') {
             read_map_file();
-        } else if(map_type == 'L') {
+        // map type should be 'L' in this case
+        } else {
             read_list_file();
-        } else { // TODO: get rid of this else statement when not debugging!
-            std::cout << "Invalid file format when reading type." << "\n";
-            exit(1);
         }
     }
 
@@ -219,6 +246,10 @@ public:
             }
             std::cout << "\n";
         }
+    }
+
+    std::vector<std::vector<Spot>> &get_grid() {
+        return grid;
     }
 };
 // 'investigation'
