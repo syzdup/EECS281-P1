@@ -5,29 +5,20 @@
 #include <vector>
 #include <getopt.h>
 
-// for debug
-#include <typeinfo>
+// when the location added to the container is treasure, stop the search
+// this struct represents a single point on the map
+struct Spot {
+    // note: unsure if there is an easier way to represent the 'type' of spot
+    char spot_type;
+    // discovered
+    bool discovered = false;
+};
 
 // class to handle all options and args provided. also reads in input files and stores data
 
 class Option_handler {
 
 private:
-    // implementation for reading in a map
-    // vector<vector<point>> 
-    // point: struct with land_type, been_visited
-    // file will be map or list of grid coords
-
-    // when the location added to the container is treasure, stop the search
-
-    struct Spot {
-        // type
-        // note: unsure if there is an easier way to represent the 'type' of spot
-        char spot_type;
-        // discovered
-        bool discovered = false;
-    };
-
     std::string captain_type = "STACK";
     std::string firstmate_type = "QUEUE";
     std::string hunt_order = "NESW";
@@ -41,6 +32,10 @@ private:
     int map_size;
 
     // full map
+    // implementation for reading in a map
+    // vector<vector<point>> 
+    // point: struct with land_type, been_visited
+    // file will be map or list of grid coords
     std::vector<std::vector<Spot>> grid;
 
     // private functions that do work for public "read_map()"
@@ -49,8 +44,6 @@ private:
         std::string row;
         // counter to keep track of row
         int r_count = 0;
-        // counter to keep track of column
-        int c_count = 0;
         // resize grid based on map size
         grid.resize(map_size);
         for(int i = 0; i < map_size; ++i) {
@@ -63,7 +56,8 @@ private:
 
         // read in each row and fill up grid
         while(getline(std::cin, row)) {
-            c_count = 0;
+            // counter to keep track of column
+            int c_count = 0;
             for(char c: row) {
                 grid[r_count][c_count].spot_type = c;
                 ++c_count;

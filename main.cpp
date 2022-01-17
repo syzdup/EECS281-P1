@@ -2,11 +2,11 @@
 // EECS 281 Project 1
 #include <getopt.h>
 #include <iostream>
-#include <iomanip>
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "Hunt.h"
+#include <deque>
+#include "Input.h"
 
 using namespace std;
 
@@ -22,6 +22,7 @@ void DEBUG_check_options(Option_handler oh) {
 }
 
 int main(int argc, char *argv[]) {
+
     ios_base::sync_with_stdio(false);
 
     Option_handler oh;
@@ -30,11 +31,17 @@ int main(int argc, char *argv[]) {
     oh.get_options(argc, argv);
 
     // for debug only, delete later 
-    //DEBUG_check_options(oh);
+    DEBUG_check_options(oh);
 
     // read the map into private data structure of option handler
     oh.read_map();
 
     // print_map() test run
-    //oh.print_map();
+    oh.print_map();
+
+    // now comes the actual hunt algorithm, not sure if i should put it into main
+    // unsure if i should be using two deques
+    deque<Spot> captain_deque;
+    deque<Spot> firstmate_deque;
+
 }
