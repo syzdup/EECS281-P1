@@ -3,18 +3,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <getopt.h>
 
-// when the location added to the container is treasure, stop the search
-// this struct represents a single point on the map
-struct Spot {
-    // note: unsure if there is an easier way to represent the 'type' of spot
-    char spot_type;
-    // discovered
-    bool discovered = false;
-};
-
-// class to handle all options and args provided. also reads in input files and stores data
+// class to handle all options and args provided
 
 class Option_handler {
 
@@ -27,73 +19,6 @@ private:
     bool stats_mode = false;
     bool show_path = false;
     std::string path_type;
-
-    // size of the map being read in (8 = 8x8)
-    int map_size;
-
-    // full map
-    // implementation for reading in a map
-    // vector<vector<point>> 
-    // point: struct with land_type, been_visited
-    // file will be map or list of grid coords
-    std::vector<std::vector<Spot>> grid;
-
-    // private functions that do work for public "read_map()"
-    void read_map_file() {
-        std::cin >> map_size;
-        std::string row;
-        // counter to keep track of row
-        int r_count = 0;
-        // resize grid based on map size
-        grid.resize(map_size);
-        for(int i = 0; i < map_size; ++i) {
-            grid[i].resize(map_size);
-        }
-
-        // deal with 'junk' newline
-        std::string junk;
-        getline(std::cin, junk);
-
-        // read in each row and fill up grid
-        while(getline(std::cin, row)) {
-            // counter to keep track of column
-            int c_count = 0;
-            for(char c: row) {
-                grid[r_count][c_count].spot_type = c;
-                ++c_count;
-            }
-            ++r_count;
-        }
-    } // read_map_file()
-
-    void read_list_file() {
-        std::cin >> map_size;
-
-        grid.resize(map_size);
-        for(int i = 0; i < map_size; ++i) {
-            grid[i].resize(map_size);
-        }
-
-        std::string junk;
-        getline(std::cin, junk);
-
-        int r;
-        int c;
-        char spot_type;
-        while(std::cin >> r >> c >> spot_type) {
-            // TODO: delete debug line
-            //std::cout << r << " " << c << " " << spot_type << "\n"; 
-            grid[r][c].spot_type = spot_type;
-        }
-        // fill in blank spots with water (can i check if the spot has a blank value rather than checking if it is each of the types? would be faster prob)
-        for(int i = 0; i < map_size; ++i) {
-            for(int j = 0; j < map_size; ++j) {
-                if(grid[i][j].spot_type != 'o' && grid[i][j].spot_type != '$' && grid[i][j].spot_type != '@') {
-                    grid[i][j].spot_type = '.';
-                }
-            }
-        }
-    } // read_list_file()
 
     // print help function
     void print_help() {
@@ -214,36 +139,4 @@ public:
         return show_path;
     }
 
-    void read_map() {
-        char map_type = ' ';
-        // read in comments until map_type is specified, then break
-        std::string comments;
-        while(getline(std::cin, comments)) {
-            if(comments[0] != '#') {
-                map_type = comments[0];
-                break;
-            }
-        }
-        // store the rest of the map based on map_type
-        if(map_type == 'M') {
-            read_map_file();
-        // map type should be 'L' in this case
-        } else {
-            read_list_file();
-        }
-    }
-
-    void print_map() {
-        for(int i = 0; i < map_size; ++i) {
-            for(int j = 0; j < map_size; ++j) {
-                std::cout << grid[i][j].spot_type;
-            }
-            std::cout << "\n";
-        }
-    }
-
-    std::vector<std::vector<Spot>> &get_grid() {
-        return grid;
-    }
 };
-// 'investigation'
