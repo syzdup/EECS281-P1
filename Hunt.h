@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <deque>
 #include "Input.h"
 
 // (2) once the map is stored as a 2d vector, implement a queue search function and a stack
@@ -11,12 +12,17 @@
 // (3) use a switch with cases to determine hunt order!
 class Hunt {
     private:
-        // starting point row and column
-        int start_r;
-        int start_c;
+        // current coords
+        int current_r;
+        int current_c;
+
+        // treasure found?
+        bool treasure_found = false;
+        bool search_ended = false;
 
         // size of the map being read in (8 = 8x8)
         int map_size;
+
 
         // create 4 directions, change x and y based on the heading indicated
         struct Direction {
@@ -32,12 +38,19 @@ class Hunt {
             // discovered
             bool discovered = false;
         };
+
+        Spot current_sail;
+        Spot current_search;
         // full map
         // implementation for reading in a map
         // vector<vector<point>> 
         // point: struct with land_type, been_visited
         // file will be map or list of grid coords
         std::vector<std::vector<Spot>> grid;
+
+        // deques for searching
+        std::deque<Spot> captain_deque;
+        std::deque<Spot> firstmate_deque;
 
         // private functions that do work for public "read_map()"
 
@@ -64,8 +77,8 @@ class Hunt {
                 for(int j = 0; j < map_size; ++j) {
                     // check for starting point
                     if(grid[i][j].spot_type == '@') {
-                        start_r = i;
-                        start_c = j;
+                        current_r = i;
+                        current_c = j;
                     }
                     if(grid[i][j].spot_type != 'o' && grid[i][j].spot_type != '$' && grid[i][j].spot_type != '@') {
                         grid[i][j].spot_type = '.';
@@ -97,8 +110,8 @@ class Hunt {
                 for(char c: row) {
                     // check for starting point
                     if(c == '@') {
-                        start_r = r_count;
-                        start_c = c_count;
+                        current_r = r_count;
+                        current_c = c_count;
                     }
                     grid[r_count][c_count].spot_type = c;
                     ++c_count;
@@ -137,5 +150,49 @@ class Hunt {
                 }
                 std::cout << "\n";
             }
+        }
+
+        // search function
+        // NOTE: add backtracking feature later. maybe add a 'came_from' direction container to spot struct
+        void search(std::string captain_type, std::string firstmate_type, std::string hunt_order, bool verbose_on, bool stats_on, bool show_path_on) {
+            // add starting point to search container, mark as visited, then pass on the work to queue or stack search
+            // searches for treasure until treasure is found, or the search returns with no results
+
+            // add start to sail container
+            // try sticking to grid[r][c] rather than using an extra 'current_spot' variable?
+            captain_deque.push_back(grid[current_r][current_c]);
+
+            // start the captain on the search process, looping until the search has ended, or treasure has been found (or both)
+            if(captain_type == "STACK") {
+                while(!search_ended || !treasure_found) {
+                    // look in all adjacent spaces, add to container, move to new location 
+                    stack_search('.');
+                }
+            } else {
+                while(!search_ended || treasure_found) {
+                    queue_search('.');
+                }
+            }
+        }
+
+        //  searches using a queue. parameter passed in is the type of spot to search for (i.e. captain or firstmate)
+        void queue_search(char spot_type) {
+            // if spot_type == 'o', make sure to consider treasure
+            // search for spot_type
+
+            // (1) Start at current location, look at adjacent locations, add to container
+
+
+
+            // if no more places to go, end the search if treasure has not been found (i.e. sail container empty)
+        }
+
+        void stack_search(char spot_type) {
+            // if spot_type == 'o', make sure to consider treasure
+            // search for spot_type
+
+
+            // if no more places to go, end the search if treasure has not been found (i.e. sail container empty)
+
         }
 };

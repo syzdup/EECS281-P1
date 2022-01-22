@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <deque>
 #include "Hunt.h"
 using namespace std;
 
