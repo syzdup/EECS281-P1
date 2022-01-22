@@ -31,9 +31,11 @@ int main(int argc, char *argv[]) {
     // for debug only, delete later 
     DEBUG_check_options(oh);
 
-    Hunt hunt;
+    Hunt hunt(oh.get_hunt_order(), oh.get_captain_type(), oh.get_firstmate_type(), oh.verbose_on(), oh.show_path_on(), oh.stats_on());
     hunt.read_map();
     hunt.print_map();
+
+    hunt.search();
 
 }
 
