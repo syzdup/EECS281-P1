@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/hunt_debug",
-            "args": ["-v", "-s", "-p", "M", "<", "${workspaceFolder}/test-3-vs.txt"],
+            "args": ["-v", "-s", "-p", "M", "-o", "SWEN" ,"<", "${workspaceFolder}/appA.lst.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

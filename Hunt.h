@@ -86,10 +86,8 @@ class Hunt {
         void read_list_file() {
             std::cin >> map_size;
 
-            grid.resize(map_size);
-            for(int i = 0; i < map_size; ++i) {
-                grid[i].resize(map_size);
-            }
+            Spot default_water{'.', no_where};
+            grid.resize(map_size, std::vector<Spot>(map_size, default_water));
 
             std::string junk;
             getline(std::cin, junk);
@@ -99,18 +97,9 @@ class Hunt {
             char spot_type;
             while(std::cin >> r >> c >> spot_type) {
                 grid[r][c].spot_type = spot_type;
-            }
-            // fill blanks with water
-            for(int i = 0; i < map_size; ++i) {
-                for(int j = 0; j < map_size; ++j) {
-                    // check for starting point
-                    if(grid[i][j].spot_type == '@') {
-                        current_r = i;
-                        current_c = j;
-                    }
-                    if(grid[i][j].spot_type != 'o' && grid[i][j].spot_type != '$' && grid[i][j].spot_type != '@' && grid[i][j].spot_type != '#') {
-                        grid[i][j].spot_type = '.';
-                    }
+                if(grid[r][c].spot_type == '@') {
+                    current_r = r;
+                    current_c = c;
                 }
             }
         } // read_list_file()
@@ -119,15 +108,12 @@ class Hunt {
         void read_map_file() {
             std::cin >> map_size;
             std::string row;
-            // counter to keep track of row
+            
             int r_count = 0;
-            // resize grid based on map size
-            grid.resize(map_size);
-            for(int i = 0; i < map_size; ++i) {
-                grid[i].resize(map_size);
-            }
 
-            // deal with 'junk' newline
+            Spot default_water{'.', no_where};
+            grid.resize(map_size, std::vector<Spot>(map_size, default_water));
+
             std::string junk;
             getline(std::cin, junk);
 
@@ -145,8 +131,7 @@ class Hunt {
                     ++c_count;
                 }
                 ++r_count;
-            }
-            
+            }   
         } // read_map_file()
 
         int calculate_path_length() {
@@ -339,7 +324,6 @@ class Hunt {
                 
                 while(!firstmate_deque.empty()) {
                     firstmate_location = firstmate_deque.front();
-                    //land_locations += 1;
                     firstmate_deque.pop_front();
                     if(grid[firstmate_location.r][firstmate_location.c].spot_type == '$') {
                         treasure_r = firstmate_location.r;
@@ -350,9 +334,6 @@ class Hunt {
                         treasure_found = true;
                         search_ended = true;
                         break;
-                    }
-                    if(!search_ended && !treasure_found) {
-                        land_locations += 1;
                     }
                     check_adjacents_firstmate();
                 }
@@ -407,9 +388,9 @@ class Hunt {
                         treasure_found = true;
                         search_ended = true;
                     }
-                    if(!search_ended && !treasure_found) {
-                        land_locations += 1;
-                    }
+                    // if(!search_ended && !treasure_found) {
+                    //     land_locations += 1;
+                    // }
                     check_adjacents_firstmate();
                 }
                 // the firstmate hunt has ended
@@ -435,10 +416,9 @@ class Hunt {
                     }
                     // check bounds, visited, spot type 
                         if(current_location.r + north.r >= 0) {
-                            if((grid[current_location.r + north.r][current_location.c].came_from == no_where) && (grid[current_location.r + north.r][current_location.c].spot_type != '#') 
-                            && (grid[current_location.r + north.r][current_location.c].spot_type != '$')) {
+                            if((grid[current_location.r + north.r][current_location.c].came_from == no_where) && (grid[current_location.r + north.r][current_location.c].spot_type != '#')) {
                                 // land found, start a subsearch using a queue or stack
-                                if(grid[current_location.r + north.r][current_location.c].spot_type == 'o') {
+                                if((grid[current_location.r + north.r][current_location.c].spot_type == 'o') || (grid[current_location.r + north.r][current_location.c].spot_type == '$')) {
                                     sub_search = true;
                                     Location new_land{current_location.r + north.r, current_location.c};
                                     grid[new_land.r][new_land.c].came_from = south;
@@ -466,10 +446,9 @@ class Hunt {
                             break;
                         }
                         if(current_location.c + east.c < map_size) {
-                            if((grid[current_location.r][current_location.c + east.c].came_from == no_where) && (grid[current_location.r][current_location.c + east.c].spot_type != '#') 
-                            && (grid[current_location.r][current_location.c + east.c].spot_type != '$')) {
+                            if((grid[current_location.r][current_location.c + east.c].came_from == no_where) && (grid[current_location.r][current_location.c + east.c].spot_type != '#')) {
                                 // check if land has been found
-                                if(grid[current_location.r][current_location.c + east.c].spot_type == 'o') {
+                                if((grid[current_location.r][current_location.c + east.c].spot_type == 'o') || (grid[current_location.r][current_location.c + east.c].spot_type == '$')) {
                                     sub_search = true;
                                     Location new_land{current_location.r, current_location.c + east.c};
                                     grid[new_land.r][new_land.c].came_from = west;
@@ -486,7 +465,6 @@ class Hunt {
                                     Location new_water{current_location.r, current_location.c + east.c};
                                     grid[new_water.r][new_water.c].came_from = west;
                                     captain_deque.push_back(new_water);
-                                    //water_locations += 1;
                                 }
                             }
                         }
@@ -497,17 +475,14 @@ class Hunt {
                         }
                         // check bounds, visited, spot type 
                         if(current_location.r + south.r < map_size) {
-                            if((grid[current_location.r + south.r][current_location.c].came_from == no_where) && (grid[current_location.r + south.r][current_location.c].spot_type != '#') 
-                            && (grid[current_location.r + south.r][current_location.c].spot_type != '$')) {
+                            if((grid[current_location.r + south.r][current_location.c].came_from == no_where) && (grid[current_location.r + south.r][current_location.c].spot_type != '#')) {
                                 // land found, start a subsearch using a queue or stack
-                                if(grid[current_location.r + south.r][current_location.c].spot_type == 'o') {
+                                if((grid[current_location.r + south.r][current_location.c].spot_type == 'o') || (grid[current_location.r + south.r][current_location.c].spot_type == 'o')) {
                                     sub_search = true;
                                     Location new_land{current_location.r + south.r, current_location.c};
                                     grid[new_land.r][new_land.c].came_from = north;
                                     firstmate_deque.push_back(new_land);
-                                    //land_locations += 1;
                                     firstmate_location = new_land;
-                                    // i think this is only for subsearch? can i replace these variables
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
                                     } else {
@@ -518,7 +493,6 @@ class Hunt {
                                     Location new_water{current_location.r + south.r, current_location.c};
                                     grid[new_water.r][new_water.c].came_from = north;
                                     captain_deque.push_back(new_water);
-                                    //water_locations += 1;
                                 }   
                             }
                         }
@@ -528,10 +502,9 @@ class Hunt {
                         break;
                         }
                         if(current_location.c + west.c >= 0) {
-                            if((grid[current_location.r][current_location.c + west.c].came_from == no_where) && (grid[current_location.r][current_location.c + west.c].spot_type != '#') 
-                            && (grid[current_location.r][current_location.c + west.c].spot_type != '$')) {
+                            if((grid[current_location.r][current_location.c + west.c].came_from == no_where) && (grid[current_location.r][current_location.c + west.c].spot_type != '#')) {
                                 // check if land has been found
-                                if(grid[current_location.r][current_location.c + west.c].spot_type == 'o') {
+                                if((grid[current_location.r][current_location.c + west.c].spot_type == 'o') || (grid[current_location.r][current_location.c + west.c].spot_type == 'o')) {
                                     sub_search = true;
                                     Location new_land{current_location.r, current_location.c + west.c};
                                     grid[new_land.r][new_land.c].came_from = east;
@@ -565,6 +538,9 @@ class Hunt {
 
         // change to look for treasure, ignore water, etc. 
         void check_adjacents_firstmate() {
+            if(!treasure_found && !search_ended) {
+                land_locations += 1;
+            }
             for(int i = 0; i < int(hunt_order.length()); ++i) {
                 switch(hunt_order[i]) {
                     case 'N':

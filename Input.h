@@ -14,6 +14,7 @@ private:
     std::string captain_type = "STACK";
     std::string firstmate_type = "QUEUE";
     std::string hunt_order = "NESW";
+    std::string temp;
     bool valid_nesw = true;
     bool verbose_mode = false;
     bool stats_mode = false;
@@ -71,7 +72,8 @@ public:
                 // TODO: check if show path has been specified multiple times
                 hunt_order = optarg;
                 // sorting is necessary for unique test
-                std::sort(hunt_order.begin(), hunt_order.end());
+                temp = hunt_order;
+                std::sort(temp.begin(), temp.end());
                 // check that there are only 4 chars and each is unique
                 // TODO: come back and simplify logic somehow. seems messy and first if statement should break before checking each char 
                 if(hunt_order.length() != 4 || std::unique(hunt_order.begin(), hunt_order.end()) != hunt_order.end()) {
