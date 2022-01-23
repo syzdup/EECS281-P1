@@ -18,7 +18,7 @@ private:
     bool verbose_mode = false;
     bool stats_mode = false;
     bool show_path = false;
-    std::string path_type;
+    char path_type;
 
     // print help function
     void print_help() {
@@ -97,8 +97,8 @@ public:
                 stats_mode = true;
                 break;
             case 'p':
-                path_type = optarg;
-                if(path_type != "M" && path_type != "L") {
+                path_type = *optarg;
+                if(path_type != 'M' && path_type != 'L') {
                     std::cerr << "Invalid argument to --show-path\n";
                     std::cerr << "  I don't recognize: " << path_type << "\n";
                     exit(1);
@@ -125,6 +125,10 @@ public:
 
     std::string get_hunt_order() {
         return hunt_order;
+    }
+
+    char get_path_type() {
+        return path_type;
     }
 
     bool verbose_on() {

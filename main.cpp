@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     Option_handler oh;
     oh.get_options(argc, argv);
 
-    Hunt hunt(oh.get_hunt_order(), oh.get_captain_type(), oh.get_firstmate_type(), oh.verbose_on(), oh.show_path_on(), oh.stats_on());
+    Hunt hunt(oh.get_hunt_order(), oh.get_captain_type(), oh.get_firstmate_type(), oh.verbose_on(), oh.show_path_on(), oh.stats_on(), oh.get_path_type());
     hunt.read_map();
     hunt.search();
 }
