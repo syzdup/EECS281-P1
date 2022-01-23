@@ -29,11 +29,11 @@ class Hunt {
 
         // ctor vars
         std::string hunt_order;
-        std::string firstmate_type;
         std::string captain_type;
+        std::string firstmate_type;
         bool verbose_on;
-        bool stats_on;
         bool show_path_on;
+        bool stats_on;
 
         // create 4 directions, change r and c based on the heading indicated
         struct Location {
@@ -182,20 +182,26 @@ class Hunt {
             // add starting point to search container, mark as visited, then pass on the work to queue or stack search
             // searches for treasure until treasure is found, or the search returns with no results
 
-            // add start to sail container
+            // add start to sail container (seed the container)
             captain_deque.push_back(current_location);
+            grid[current_location.r][current_location.c].discovered = true;
+            if(verbose_on) {
+                std::cout << "Treasure hunt started at: " << current_location.r << "," << current_location.c << "\n";
+            }
 
             // start the captain on the search process, looping until the search has ended, or treasure has been found (or both)
             if(captain_type == "STACK") {
-                while(!search_ended || !treasure_found) {
+                while(!search_ended && !treasure_found) {
                     // look in all adjacent spaces, add to container, move to new location 
                     stack_search();
                 }
             } else {
-                while(!search_ended || treasure_found) {
+                while(!search_ended && !treasure_found) {
                     queue_search();
                 }
             }
+            // search has failed
+            std::cout << "Treasure hunt failed\n";
         }
         /*
                 WILL PROBABLY WANT TO MAKE THESE FUNCTIONS PRIVATE IN THE FUTURE.
@@ -224,15 +230,25 @@ class Hunt {
                 // (1) add adjacent locations
                 // (2) set current location, check if treasure
                 // (3) pop if not, check until empty
+                if(verbose_on) {
+                    std::cout << "Went ashore at: " << firstmate_location.r << "," << firstmate_location.c << "\n" << "Searching island... ";
+                }
+                
                 while(!firstmate_deque.empty()) {
-                    check_adjacents_firstmate();
                     firstmate_location = firstmate_deque.front();
-
+                    firstmate_deque.pop_front();
                     if(grid[firstmate_location.r][firstmate_location.c].spot_type == '$') {
+                        if(verbose_on) {
+                            std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c << ".\n";
+                        }
                         treasure_found = true;
                         search_ended = true;
+                        break;
                     }
-                    firstmate_deque.pop_front();
+                    check_adjacents_firstmate();
+                }
+                if(!treasure_found) {
+                    std::cout << "party returned with no treasure.\n";
                 }
                 sub_search = false;
             }
@@ -259,17 +275,27 @@ class Hunt {
                 // (1) add adjacent locations
                 // (2) set current location, check if treasure
                 // (3) pop if not, check until empty
+                if(verbose_on) {
+                    std::cout << "Went ashore at: " << firstmate_location.r << "," << firstmate_location.c << "\n" << "Searching island... ";
+                }
+                
+            
                 while(!firstmate_deque.empty()) {
-                    check_adjacents_firstmate();
                     firstmate_location = firstmate_deque.back();
-
+                    firstmate_deque.pop_back();
                     if(grid[firstmate_location.r][firstmate_location.c].spot_type == '$') {
+                        if(verbose_on) {
+                            std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c << ".\n";
+                        }
                         treasure_found = true;
                         search_ended = true;
                     }
-                    firstmate_deque.pop_back();
+                    check_adjacents_firstmate();
                 }
                 // the firstmate hunt has ended
+                if(!treasure_found) {
+                    std::cout << "party returned with no treasure.\n";
+                }
                 sub_search = false;
 
             }
@@ -282,9 +308,12 @@ class Hunt {
             for(int i = 0; i < int(hunt_order.length()); ++i) {
                 switch(hunt_order[i]) {
                     case 'N':
+                    if(treasure_found || search_ended) {
+                        break;
+                    }
                     // check bounds, visited, spot type 
                         if(current_location.r + north.r >= 0) {
-                            if(grid[current_location.r + north.r][current_location.c].discovered = false && grid[current_location.r + north.r][current_location.c].spot_type != '#') {
+                            if((grid[current_location.r + north.r][current_location.c].discovered == false) && (grid[current_location.r + north.r][current_location.c].spot_type != '#') && (grid[current_location.r + north.r][current_location.c].spot_type != '$')) {
                                 // land found, start a subsearch using a queue or stack
                                 if(grid[current_location.r + north.r][current_location.c].spot_type == 'o') {
                                     sub_search = true;
@@ -298,16 +327,21 @@ class Hunt {
                                     } else {
                                         stack_search();
                                     }
+                                } else {
+                                    // not land, valid water spot on map!
+                                    Location new_water{current_location.r + north.r, current_location.c};
+                                    grid[new_water.r][new_water.c].discovered = true;
+                                    captain_deque.push_back(new_water);
                                 }
-                                // not land, valid water spot on map!
-                                Location new_water{current_location.r + north.r, current_location.c};
-                                grid[new_water.r][new_water.c].discovered = true;
-                                captain_deque.push_back(new_water);
-                                }
+                            }
                         }
+                        break;
                     case 'E':
+                        if(treasure_found || search_ended) {
+                            break;
+                        }
                         if(current_location.c + east.c < map_size) {
-                            if(grid[current_location.r][current_location.c + east.c].discovered = false && grid[current_location.r][current_location.c + east.c].spot_type != '#') {
+                            if((grid[current_location.r][current_location.c + east.c].discovered == false) && (grid[current_location.r][current_location.c + east.c].spot_type != '#') && (grid[current_location.r][current_location.c + east.c].spot_type != '$')) {
                                 // check if land has been found
                                 if(grid[current_location.r][current_location.c + east.c].spot_type == 'o') {
                                     sub_search = true;
@@ -320,17 +354,22 @@ class Hunt {
                                     } else {
                                         stack_search();
                                     }
+                                } else {
+                                    // not land, valid water spot
+                                    Location new_water{current_location.r, current_location.c + east.c};
+                                    grid[new_water.r][new_water.c].discovered = true;
+                                    captain_deque.push_back(new_water);
                                 }
-                                // not land, valid water spot
-                                Location new_water{current_location.r, current_location.c + east.c};
-                                grid[new_water.r][new_water.c].discovered = true;
-                                captain_deque.push_back(new_water);
                             }
                         }
+                        break;
                     case 'S':
+                        if(treasure_found || search_ended) {
+                        break;
+                        }
                         // check bounds, visited, spot type 
                         if(current_location.r + south.r < map_size) {
-                            if(grid[current_location.r + south.r][current_location.c].discovered = false && grid[current_location.r + south.r][current_location.c].spot_type != '#') {
+                            if((grid[current_location.r + south.r][current_location.c].discovered == false) && (grid[current_location.r + south.r][current_location.c].spot_type != '#') && (grid[current_location.r + south.r][current_location.c].spot_type != '$')) {
                                 // land found, start a subsearch using a queue or stack
                                 if(grid[current_location.r + south.r][current_location.c].spot_type == 'o') {
                                     sub_search = true;
@@ -344,16 +383,21 @@ class Hunt {
                                     } else {
                                         stack_search();
                                     }
-                                }
-                                // not land, valid water spot on map!
-                                Location new_water{current_location.r + south.r, current_location.c};
-                                grid[new_water.r][new_water.c].discovered = true;
-                                captain_deque.push_back(new_water);
-                                }
+                                } else {
+                                    // not land, valid water spot on map!
+                                    Location new_water{current_location.r + south.r, current_location.c};
+                                    grid[new_water.r][new_water.c].discovered = true;
+                                    captain_deque.push_back(new_water);
+                                }   
+                            }
                         }
+                        break;
                     case 'W':
+                        if(treasure_found || search_ended) {
+                        break;
+                        }
                         if(current_location.c + west.c >= 0) {
-                            if(grid[current_location.r][current_location.c + west.c].discovered = false && grid[current_location.r][current_location.c + west.c].spot_type != '#') {
+                            if((grid[current_location.r][current_location.c + west.c].discovered == false) && (grid[current_location.r][current_location.c + west.c].spot_type != '#') && (grid[current_location.r][current_location.c + west.c].spot_type != '$')) {
                                 // check if land has been found
                                 if(grid[current_location.r][current_location.c + west.c].spot_type == 'o') {
                                     sub_search = true;
@@ -366,13 +410,15 @@ class Hunt {
                                     } else {
                                         stack_search();
                                     }
+                                } else {
+                                    // not land, valid water spot
+                                    Location new_water{current_location.r, current_location.c + west.c};
+                                    grid[new_water.r][new_water.c].discovered = true;
+                                    captain_deque.push_back(new_water);
                                 }
-                                // not land, valid water spot
-                                Location new_water{current_location.r, current_location.c + west.c};
-                                grid[new_water.r][new_water.c].discovered = true;
-                                captain_deque.push_back(new_water);
                             }
                         }
+                        break;
 
                     default:
                         std::cout << "ERROR: No such direction." << "\n";
@@ -388,33 +434,37 @@ class Hunt {
                 switch(hunt_order[i]) {
                     case 'N':
                         if(firstmate_location.r + north.r >= 0) {
-                            if(grid[firstmate_location.r + north.r][firstmate_location.c].discovered = false && grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '#' && grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '.') {
+                            if((grid[firstmate_location.r + north.r][firstmate_location.c].discovered == false) && (grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '#') && (grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '.')) {
                                 Location new_land{firstmate_location.r + north.r, firstmate_location.c};
                                 grid[new_land.r][new_land.c].discovered = true;
                                 firstmate_deque.push_back(new_land);   
                             }     
                         }
+                        break;
                     case 'E':
                         if(firstmate_location.c + east.c < map_size) {
-                            if(grid[firstmate_location.r][firstmate_location.c + east.c].discovered = false && grid[firstmate_location.r][firstmate_location.c + east.c].spot_type != '#' && grid[firstmate_location.r][firstmate_location.c + east.c].spot_type != '.') {
+                            if((grid[firstmate_location.r][firstmate_location.c + east.c].discovered == false) && (grid[firstmate_location.r][firstmate_location.c + east.c].spot_type != '#') && (grid[firstmate_location.r][firstmate_location.c + east.c].spot_type != '.')) {
                                 Location new_land{firstmate_location.r, firstmate_location.c + east.c};
                                 firstmate_deque.push_back(new_land);
                                 }
                         }
+                        break;
                     case 'S':
-                        if(firstmate_location.r + south.r >= 0) {
-                            if(grid[firstmate_location.r + south.r][firstmate_location.c].discovered = false && grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '#' && grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '.') {
+                        if(firstmate_location.r + south.r < map_size) {
+                            if((grid[firstmate_location.r + south.r][firstmate_location.c].discovered == false) && (grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '#') && (grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '.')) {
                                 Location new_land{firstmate_location.r + south.r, firstmate_location.c};
                                 firstmate_deque.push_back(new_land);   
                             }     
                         }
+                        break;
                     case 'W':
                         if(firstmate_location.c + west.c >= 0) {
-                            if(grid[firstmate_location.r][firstmate_location.c + west.c].discovered = false && grid[firstmate_location.r][firstmate_location.c + west.c].spot_type != '#' && grid[firstmate_location.r][firstmate_location.c + west.c].spot_type != '.') {
+                            if((grid[firstmate_location.r][firstmate_location.c + west.c].discovered == false) && (grid[firstmate_location.r][firstmate_location.c + west.c].spot_type != '#') && (grid[firstmate_location.r][firstmate_location.c + west.c].spot_type != '.')) {
                                 Location new_land{firstmate_location.r, firstmate_location.c + west.c};
                                 firstmate_deque.push_back(new_land);
                             }
                         }
+                        break;
                     default:
                         std::cout << "ERROR: No such direction." << "\n";
                         break;
