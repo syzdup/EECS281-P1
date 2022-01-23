@@ -1,5 +1,7 @@
 # A very simple map in order to test functionality in my program
 M
-2
-$#
-#@
+4
+.$o.
+..#.
+ooo.
+...@
