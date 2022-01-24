@@ -19,6 +19,7 @@ private:
     bool verbose_mode = false;
     bool stats_mode = false;
     bool show_path = false;
+    bool show_path_specified = false;
     char path_type;
 
     // print help function
@@ -99,6 +100,11 @@ public:
                 stats_mode = true;
                 break;
             case 'p':
+                if(show_path_specified) {
+                    std::cerr << "Specify --show-path only once\n";
+                    exit(1);
+                }
+                show_path_specified = true;
                 path_type = *optarg;
                 if(path_type != 'M' && path_type != 'L') {
                     std::cerr << "Invalid argument to --show-path\n";
@@ -109,7 +115,7 @@ public:
                 break;
 
             default:
-                std::cerr << "Unknown option" << std::endl;
+                std::cerr << "Unknown option\n";
                 exit(1);
             }
         }
