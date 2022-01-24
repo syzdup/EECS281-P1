@@ -450,6 +450,7 @@ class Hunt {
                                     // new location to be pushed to stack/queue
                                     Location new_land{current_location.r + north.r, current_location.c};
                                     grid[new_land.r][new_land.c].came_from = south;
+                                    firstmate_location = new_land;
                                     firstmate_deque.push_back(new_land);
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
@@ -476,6 +477,7 @@ class Hunt {
                                     search_party = true;
                                     Location new_land{current_location.r, current_location.c + east.c};
                                     grid[new_land.r][new_land.c].came_from = west;
+                                    firstmate_location = new_land;
                                     firstmate_deque.push_back(new_land);
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
@@ -503,6 +505,7 @@ class Hunt {
                                     search_party = true;
                                     Location new_land{current_location.r + south.r, current_location.c};
                                     grid[new_land.r][new_land.c].came_from = north;
+                                    firstmate_location = new_land;
                                     firstmate_deque.push_back(new_land);
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
@@ -529,6 +532,7 @@ class Hunt {
                                     search_party = true;
                                     Location new_land{current_location.r, current_location.c + west.c};
                                     grid[new_land.r][new_land.c].came_from = east;
+                                    firstmate_location = new_land;
                                     firstmate_deque.push_back(new_land);
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
@@ -567,8 +571,7 @@ class Hunt {
                             && (grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '.')) {
                                 Location new_land{firstmate_location.r + north.r, firstmate_location.c};
                                 grid[new_land.r][new_land.c].came_from = south;
-                                firstmate_deque.push_back(new_land);  
-                                //land_locations += 1; 
+                                firstmate_deque.push_back(new_land);
                             }     
                         }
                         break;
@@ -579,7 +582,6 @@ class Hunt {
                                 Location new_land{firstmate_location.r, firstmate_location.c + east.c};
                                 grid[new_land.r][new_land.c].came_from = west;
                                 firstmate_deque.push_back(new_land);
-                                //land_locations += 1;
                                 }
                         }
                         break;
@@ -589,8 +591,7 @@ class Hunt {
                             && (grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '.')) {
                                 Location new_land{firstmate_location.r + south.r, firstmate_location.c};
                                 grid[new_land.r][new_land.c].came_from = north;
-                                firstmate_deque.push_back(new_land);   
-                                //land_locations += 1;
+                                firstmate_deque.push_back(new_land);
                             }     
                         }
                         break;
@@ -601,7 +602,6 @@ class Hunt {
                                 Location new_land{firstmate_location.r, firstmate_location.c + west.c};
                                 grid[new_land.r][new_land.c].came_from = east;
                                 firstmate_deque.push_back(new_land);
-                                //land_locations += 1;
                             }
                         }
                         break;
