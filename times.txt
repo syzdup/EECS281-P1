@@ -1,0 +1,130 @@
+Treasure hunt started at: 23,23
+Went ashore at: 23,17
+Searching island... party returned with no treasure.
+Went ashore at: 21,15
+Searching island... party returned with no treasure.
+Went ashore at: 23,5
+Searching island... party returned with no treasure.
+Went ashore at: 21,3
+Searching island... party returned with no treasure.
+Went ashore at: 20,4
+Searching island... party returned with no treasure.
+Went ashore at: 20,6
+Searching island... party returned with no treasure.
+Went ashore at: 20,8
+Searching island... party returned with no treasure.
+Went ashore at: 20,16
+Searching island... party returned with no treasure.
+Went ashore at: 20,18
+Searching island... party returned with no treasure.
+Went ashore at: 20,20
+Searching island... party returned with no treasure.
+Went ashore at: 16,21
+Searching island... party returned with no treasure.
+Went ashore at: 16,17
+Searching island... party returned with no treasure.
+Went ashore at: 16,14
+Searching island... party returned with no treasure.
+Went ashore at: 16,12
+Searching island... party returned with no treasure.
+Went ashore at: 16,9
+Searching island... party returned with no treasure.
+Went ashore at: 16,5
+Searching island... party returned with no treasure.
+Went ashore at: 16,2
+Searching island... party returned with no treasure.
+Went ashore at: 16,0
+Searching island... party returned with no treasure.
+Went ashore at: 12,1
+Searching island... party returned with no treasure.
+Went ashore at: 10,1
+Searching island... party returned with no treasure.
+Went ashore at: 13,5
+Searching island... party returned with no treasure.
+Went ashore at: 14,8
+Searching island... party returned with no treasure.
+Went ashore at: 13,9
+Searching island... party returned with no treasure.
+Went ashore at: 13,17
+Searching island... party returned with no treasure.
+Went ashore at: 14,20
+Searching island... party returned with no treasure.
+Went ashore at: 13,21
+Searching island... party returned with no treasure.
+Went ashore at: 9,21
+Searching island... party returned with no treasure.
+Went ashore at: 9,15
+Searching island... party returned with no treasure.
+Went ashore at: 9,9
+Searching island... party returned with no treasure.
+Went ashore at: 8,4
+Searching island... party returned with no treasure.
+Went ashore at: 8,6
+Searching island... party returned with no treasure.
+Went ashore at: 4,0
+Searching island... party returned with no treasure.
+Went ashore at: 4,2
+Searching island... party returned with no treasure.
+Went ashore at: 4,5
+Searching island... party returned with no treasure.
+Went ashore at: 8,16
+Searching island... party returned with no treasure.
+Went ashore at: 8,18
+Searching island... party returned with no treasure.
+Went ashore at: 4,21
+Searching island... party returned with no treasure.
+Went ashore at: 4,17
+Searching island... party returned with no treasure.
+Went ashore at: 4,14
+Searching island... party returned with no treasure.
+Went ashore at: 4,12
+Searching island... party returned with no treasure.
+Went ashore at: 4,9
+Searching island... party returned with no treasure.
+Went ashore at: 2,10
+Searching island... party returned with no treasure.
+Went ashore at: 2,8
+Searching island... party returned with no treasure.
+Went ashore at: 1,17
+Searching island... party returned with no treasure.
+Went ashore at: 2,20
+Searching island... party returned with no treasure.
+Went ashore at: 1,21
+Searching island... party returned with no treasure.
+Went ashore at: 0,7
+Searching island... party returned with no treasure.
+Went ashore at: 0,1
+Searching island... party found treasure at 0,1.
+--- STATS ---
+Starting location: 23,23
+Water locations investigated: 285
+Land locations investigated: 114
+Went ashore: 48
+Path length: 217
+Treasure location: 0,1
+--- STATS ---
++X#..ooo+--+.o#..ooo....
+|#...oo++oo++#...oo..oo.
++------+o.o.|.......o.o.
+.....o###.+-+....o###...
+o.o.#o...o|.o.o.#o...o..
+.+-----+..+------------+
+#|#.#.#|#.#.#.#.#.#.#.#|
+.+---+.+---+...+-------+
+....o|o.ooo+---+o.o.ooo.
+.ooo.|.ooo...ooo...ooo..
+.oo..+------+oo+-------+
++--+.o......+--+.o.....|
+|o#|.ooo+--+..#..ooo+--+
+|#.|.oo++oo|.#...oo++oo.
+|..+---+o.o|....+--+o.o.
+++...o###..+----+o###...
+o|o.#o...o..o.o.#o...o..
+.+---------------------+
+#.#.#.#.....#.#.#.#.#.#|
+...+-------+...+-------+
++--+o.o.ooo+---+o.o.ooo.
+|ooo...ooo...ooo...ooo..
+|oo+--+......oo+--+.....
++--+.o+--------+.o+----@
+Treasure found at 0,1 with path length 217.

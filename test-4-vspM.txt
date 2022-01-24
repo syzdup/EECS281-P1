@@ -1,5 +1,6 @@
 # Test if no land other than treasure
 M
-2
-$.
-.@
+3
+$#.
+oo.
+..@
