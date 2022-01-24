@@ -65,7 +65,6 @@ class Hunt {
         // when the location added to the container is treasure, stop the search
         // this struct represents a single point on the map
         struct Spot {
-            // note: unsure if there is an easier way to represent the 'type' of spot
             char spot_type;
             Location came_from{0, 0};
         };
@@ -86,6 +85,7 @@ class Hunt {
         void read_list_file();
         // read input from a map file
         void read_map_file();
+        // calculate path length
         int calculate_path_length();
 
 
@@ -95,7 +95,6 @@ class Hunt {
         bool show_path_on_in, bool stats_on_in, char path_type_in);
         // calls other functions based on whether it is in list or map format
         void read_map();
-
         // print out the map
         void print_map();
         // search function

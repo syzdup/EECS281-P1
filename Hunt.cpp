@@ -279,12 +279,13 @@ void Hunt::queue_search() {
             //firstmate_deque.pop_front();
             firstmate_location = firstmate_deque.front();
             firstmate_deque.pop_front();
+            land_locations += 1;
             if(grid[firstmate_location.r][firstmate_location.c].spot_type == '$') {
                 treasure_r = firstmate_location.r;
                 treasure_c = firstmate_location.c;
                 if(verbose_on) {
                     std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c << ".\n";
-                    land_locations += 1;
+                    //land_locations += 1;
                     //std::cout << "---DEBUG: Investigating treasure spot at: " << firstmate_location.r << "," << firstmate_location.c << "...\n";
                     
                 }
@@ -327,13 +328,14 @@ void Hunt::stack_search() {
         while(!firstmate_deque.empty()) {
             firstmate_location = firstmate_deque.back();
             firstmate_deque.pop_back();
+            land_locations += 1;
             if(grid[firstmate_location.r][firstmate_location.c].spot_type == '$') {
                 treasure_r = firstmate_location.r;
                 treasure_c = firstmate_location.c;
                 if(verbose_on) {
                     std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c << ".\n";
                     //std::cout << "---DEBUG: Investigating treasure spot at: " << firstmate_location.r << "," << firstmate_location.c << "...\n";
-                    land_locations += 1;
+                    //land_locations += 1;
                     
                 }
                 treasure_found = true;
@@ -480,11 +482,14 @@ void Hunt::check_adjacents_captain() {
 void Hunt::check_adjacents_firstmate() {
     if(!treasure_found && !search_ended) {
         //std::cout << "---DEBUG: Investigating land location at: " << firstmate_location.r << "," << firstmate_location.c << "...\n";
-        land_locations += 1;
+        //land_locations += 1;
     }
     for(int i = 0; i < int(hunt_order.length()); ++i) {
         switch(hunt_order[i]) {
             case 'N':
+            if(search_ended || treasure_found) {
+                break;
+            }
                 if(firstmate_location.r + north.r >= 0) {
                     if((grid[firstmate_location.r + north.r][firstmate_location.c].came_from == no_where) && (grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '#') 
                     && (grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '.')) {
@@ -495,6 +500,9 @@ void Hunt::check_adjacents_firstmate() {
                 }
                 break;
             case 'E':
+                if(search_ended || treasure_found) {
+                    break;
+                }
                 if(firstmate_location.c + east.c < map_size) {
                     if((grid[firstmate_location.r][firstmate_location.c + east.c].came_from == no_where) && (grid[firstmate_location.r][firstmate_location.c + east.c].spot_type != '#') 
                     && (grid[firstmate_location.r][firstmate_location.c + east.c].spot_type != '.')) {
@@ -505,6 +513,9 @@ void Hunt::check_adjacents_firstmate() {
                 }
                 break;
             case 'S':
+                if(search_ended || treasure_found) {
+                    break;
+                }
                 if(firstmate_location.r + south.r < map_size) {
                     if((grid[firstmate_location.r + south.r][firstmate_location.c].came_from == no_where) && (grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '#') 
                     && (grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '.')) {
@@ -515,6 +526,9 @@ void Hunt::check_adjacents_firstmate() {
                 }
                 break;
             case 'W':
+                if(search_ended || treasure_found) {
+                    break;
+                }
                 if(firstmate_location.c + west.c >= 0) {
                     if((grid[firstmate_location.r][firstmate_location.c + west.c].came_from == no_where) && (grid[firstmate_location.r][firstmate_location.c + west.c].spot_type != '#') 
                     && (grid[firstmate_location.r][firstmate_location.c + west.c].spot_type != '.')) {
