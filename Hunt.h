@@ -22,7 +22,7 @@ class Hunt {
         // treasure found?
         bool treasure_found = false;
         bool search_ended = false;
-        bool sub_search = false;
+        bool search_party = false;
 
         // size of the map being read in (8 = 8x8)
         int map_size;
@@ -194,13 +194,11 @@ class Hunt {
         }
 
         // search function
-        // NOTE: add backtracking feature later. maybe add a 'came_from' direction container to spot struct
-        // when backtracking is added, use 'came_from' and get rid of the visited bool. you can just see if the location has been 'came_from' before.
         void search() {
             // add starting point to search container, mark as visited, then pass on the work to queue or stack search
             // searches for treasure until treasure is found, or the search returns with no results
 
-            // add start to sail container (seed the container)
+            // seeding the container
             captain_deque.push_back(current_location);
             grid[current_location.r][current_location.c].came_from = {-1, -1};
             // only set these in order to keep track for stats
@@ -246,7 +244,7 @@ class Hunt {
                     grid[treasure_r][treasure_c].spot_type = 'X'; 
                     while(grid[visit.r][visit.c].came_from != start) {
                         if(grid[visit.r][visit.c].came_from == north) {
-                            visit.r += 1;
+                            visit.r -= 1;
                             if(grid[visit.r][visit.c].came_from == north) {
                                 grid[visit.r][visit.c].spot_type = '|';
                             } else {
@@ -281,7 +279,46 @@ class Hunt {
                     grid[visit.r][visit.c].spot_type = '@';
                     print_map();
                 } else if(path_type == 'L') {
-                    // handle list type later
+                    std::cout << "Sail:\n";
+                    Location visit{treasure_r, treasure_c};
+                    Location start{-1, -1};
+                    Location starting_pos{start_r, start_c};
+                    std::vector<Location> path;
+                    if(!stats_on) {
+                        path.reserve(calculate_path_length() + 1);
+                    } else {
+                        path.reserve(path_length + 1);
+                    }
+                    while(grid[visit.r][visit.c].came_from != start) {
+                        if(grid[visit.r][visit.c].came_from == north) {
+                            path.push_back(visit);
+                            visit.r -= 1;
+                
+                        } else if(grid[visit.r][visit.c].came_from == south) {
+                            path.push_back(visit);
+                            visit.r += 1;
+                            
+                        } else if(grid[visit.r][visit.c].came_from == east) {
+                            path.push_back(visit);
+                            visit.c += 1;
+                            
+                        } else if(grid[visit.r][visit.c].came_from == west) {
+                            path.push_back(visit);
+                            visit.c -= 1;
+                            
+                        }
+                    }
+                    path.push_back(starting_pos);
+                    bool search_print = false;
+                    for(int i = int(path.size() - 1); i >= 0; --i) {
+                        if(!search_print) {
+                            if(grid[path[i].r][path[i].c].spot_type == 'o') {
+                            std::cout << "Search:\n";
+                            search_print = true;
+                            }
+                        }
+                        std::cout << path[i].r << "," << path[i].c << "\n";
+                    }
                 }
             }
             // final results. always prints regardless of the mode
@@ -300,7 +337,7 @@ class Hunt {
 
         //  searches using a queue. parameter passed in is the type of spot to search for (i.e. captain or firstmate)
         void queue_search() {
-            if(!sub_search) {
+            if(!search_party) {
                 while(!captain_deque.empty()) {
                     // now look for adjacent locations, add to container if possible
                     // SAIL LOCATION IS FRONT FOR QUEUE!!!
@@ -314,15 +351,12 @@ class Hunt {
                 }
             } else {
                 // search party sent out:
-                // (1) add adjacent locations
-                // (2) set current location, check if treasure
-                // (3) pop if not, check until empty
                 if(verbose_on) {
                     std::cout << "Went ashore at: " << firstmate_location.r << "," << firstmate_location.c << "\n" << "Searching island... ";
                 }
-                went_ashore += 1;
-                
+                went_ashore += 1;           
                 while(!firstmate_deque.empty()) {
+                    //firstmate_deque.pop_front();
                     firstmate_location = firstmate_deque.front();
                     firstmate_deque.pop_front();
                     if(grid[firstmate_location.r][firstmate_location.c].spot_type == '$') {
@@ -330,6 +364,9 @@ class Hunt {
                         treasure_c = firstmate_location.c;
                         if(verbose_on) {
                             std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c << ".\n";
+                            land_locations += 1;
+                            //std::cout << "---DEBUG: Investigating treasure spot at: " << firstmate_location.r << "," << firstmate_location.c << "...\n";
+                            
                         }
                         treasure_found = true;
                         search_ended = true;
@@ -340,7 +377,7 @@ class Hunt {
                 if(!treasure_found && verbose_on) {
                     std::cout << "party returned with no treasure.\n";
                 }
-                sub_search = false;
+                search_party = false;
             }
             // if no more places to go, end the search if treasure has not been found (i.e. sail container empty)
             if(firstmate_deque.empty() && captain_deque.empty()) {
@@ -349,11 +386,8 @@ class Hunt {
         }
 
         void stack_search() {
-            // if spot_type == 'o', make sure to consider treasure
-            // search for spot_type
-            // SAIL LOCATION IS TOP FOR STACK
-
-            if(!sub_search) {
+            // if captain is searching
+            if(!search_party) {
                 while(!captain_deque.empty()) {
                     // now look for adjacent locations, add to container if possible
                     // SAIL LOCATION IS BACK FOR STACK!!!
@@ -362,20 +396,14 @@ class Hunt {
                     if(!treasure_found && !search_ended) {
                         water_locations += 1;
                     }
-                    check_adjacents_captain();
-                    
+                    check_adjacents_captain();  
                 }
             } else {
                 // search party sent out:
-                // (0) add starting location 
-                // (1) add adjacent locations
-                // (2) set current location, check if treasure
-                // (3) pop if not, check until empty
                 if(verbose_on) {
                     std::cout << "Went ashore at: " << firstmate_location.r << "," << firstmate_location.c << "\n" << "Searching island... ";
                 }
                 went_ashore += 1;
-            
                 while(!firstmate_deque.empty()) {
                     firstmate_location = firstmate_deque.back();
                     firstmate_deque.pop_back();
@@ -384,27 +412,25 @@ class Hunt {
                         treasure_c = firstmate_location.c;
                         if(verbose_on) {
                             std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c << ".\n";
+                            //std::cout << "---DEBUG: Investigating treasure spot at: " << firstmate_location.r << "," << firstmate_location.c << "...\n";
+                            land_locations += 1;
+                            
                         }
                         treasure_found = true;
                         search_ended = true;
                     }
-                    // if(!search_ended && !treasure_found) {
-                    //     land_locations += 1;
-                    // }
                     check_adjacents_firstmate();
                 }
                 // the firstmate hunt has ended
                 if(!treasure_found && verbose_on) {
                     std::cout << "party returned with no treasure.\n";
                 }
-                sub_search = false;
-
+                search_party = false;
             }
             // if no more places to go, end the search if treasure has not been found (i.e. sail container empty)
             if(firstmate_deque.empty() && captain_deque.empty()) {
                 search_ended = true;
             }
-
         }
 
         void check_adjacents_captain() {
@@ -419,13 +445,12 @@ class Hunt {
                             if((grid[current_location.r + north.r][current_location.c].came_from == no_where) && (grid[current_location.r + north.r][current_location.c].spot_type != '#')) {
                                 // land found, start a subsearch using a queue or stack
                                 if((grid[current_location.r + north.r][current_location.c].spot_type == 'o') || (grid[current_location.r + north.r][current_location.c].spot_type == '$')) {
-                                    sub_search = true;
+                                    // search party has been sent out (information is needed for stack_search or queue_search functions)
+                                    search_party = true;
+                                    // new location to be pushed to stack/queue
                                     Location new_land{current_location.r + north.r, current_location.c};
                                     grid[new_land.r][new_land.c].came_from = south;
                                     firstmate_deque.push_back(new_land);
-                                    //land_locations += 1;
-                                    firstmate_location = new_land;
-                                    // i think this is only for subsearch? can i replace these variables
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
                                     } else {
@@ -436,7 +461,6 @@ class Hunt {
                                     Location new_water{current_location.r + north.r, current_location.c};
                                     grid[new_water.r][new_water.c].came_from = south;
                                     captain_deque.push_back(new_water);
-                                    //water_locations += 1;
                                 }
                             }
                         }
@@ -449,12 +473,10 @@ class Hunt {
                             if((grid[current_location.r][current_location.c + east.c].came_from == no_where) && (grid[current_location.r][current_location.c + east.c].spot_type != '#')) {
                                 // check if land has been found
                                 if((grid[current_location.r][current_location.c + east.c].spot_type == 'o') || (grid[current_location.r][current_location.c + east.c].spot_type == '$')) {
-                                    sub_search = true;
+                                    search_party = true;
                                     Location new_land{current_location.r, current_location.c + east.c};
                                     grid[new_land.r][new_land.c].came_from = west;
                                     firstmate_deque.push_back(new_land);
-                                    //land_locations += 1;
-                                    firstmate_location = new_land;
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
                                     } else {
@@ -478,11 +500,10 @@ class Hunt {
                             if((grid[current_location.r + south.r][current_location.c].came_from == no_where) && (grid[current_location.r + south.r][current_location.c].spot_type != '#')) {
                                 // land found, start a subsearch using a queue or stack
                                 if((grid[current_location.r + south.r][current_location.c].spot_type == 'o') || (grid[current_location.r + south.r][current_location.c].spot_type == 'o')) {
-                                    sub_search = true;
+                                    search_party = true;
                                     Location new_land{current_location.r + south.r, current_location.c};
                                     grid[new_land.r][new_land.c].came_from = north;
                                     firstmate_deque.push_back(new_land);
-                                    firstmate_location = new_land;
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
                                     } else {
@@ -505,12 +526,10 @@ class Hunt {
                             if((grid[current_location.r][current_location.c + west.c].came_from == no_where) && (grid[current_location.r][current_location.c + west.c].spot_type != '#')) {
                                 // check if land has been found
                                 if((grid[current_location.r][current_location.c + west.c].spot_type == 'o') || (grid[current_location.r][current_location.c + west.c].spot_type == 'o')) {
-                                    sub_search = true;
+                                    search_party = true;
                                     Location new_land{current_location.r, current_location.c + west.c};
                                     grid[new_land.r][new_land.c].came_from = east;
                                     firstmate_deque.push_back(new_land);
-                                    //land_locations += 1;
-                                    firstmate_location = new_land;
                                     if(firstmate_type == "QUEUE") {
                                         queue_search();
                                     } else {
@@ -521,8 +540,6 @@ class Hunt {
                                     Location new_water{current_location.r, current_location.c + west.c};
                                     grid[new_water.r][new_water.c].came_from = east;
                                     captain_deque.push_back(new_water);
-                                    //water_locations += 1;
-                                    
                                 }
                             }
                         }
@@ -539,6 +556,7 @@ class Hunt {
         // change to look for treasure, ignore water, etc. 
         void check_adjacents_firstmate() {
             if(!treasure_found && !search_ended) {
+                //std::cout << "---DEBUG: Investigating land location at: " << firstmate_location.r << "," << firstmate_location.c << "...\n";
                 land_locations += 1;
             }
             for(int i = 0; i < int(hunt_order.length()); ++i) {
