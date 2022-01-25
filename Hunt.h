@@ -99,11 +99,8 @@ class Hunt {
         void print_map();
         // search function
         void search();
-        //  searches using a queue. parameter passed in is the type of spot to search for (i.e. captain or firstmate)
-        void queue_search();
-
-        void stack_search();
-
+        //  searches using a deque
+        void deque_search(bool deque_type);
         void check_adjacents_captain();
             
         // change to look for treasure, ignore water, etc. 
