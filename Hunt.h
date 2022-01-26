@@ -36,11 +36,32 @@ class Hunt {
         bool stats_on;
         char path_type;
 
+        // full map
+        // implementation for reading in a map
+        // vector<vector<point>> 
+        // point: struct with land_type, been_visited
+        // file will be map or list of grid coords
+
+        // deques for searching
+        // std::deque<Location> captain_deque;
+        // std::deque<Location> firstmate_deque;
+
+        // private functions that do work for public "read_map()":
+        // read input for a list file
+        void read_list_file();
+        // read input from a map file
+        void read_map_file();
+        // calculate path length
+        int calculate_path_length();
+
+
+    public:
         // create 4 directions, change r and c based on the heading indicated
         struct Location {
             int r;
             int c;
         };
+
         // directions with pairs that change row and column 
         const Location north{-1, 0};
         const Location east{0, 1};
@@ -65,32 +86,13 @@ class Hunt {
 
         // when the location added to the container is treasure, stop the search
         // this struct represents a single point on the map
+
         struct Spot {
             char spot_type;
             Location came_from{0, 0};
         };
 
-        // full map
-        // implementation for reading in a map
-        // vector<vector<point>> 
-        // point: struct with land_type, been_visited
-        // file will be map or list of grid coords
         std::vector<std::vector<Spot>> grid;
-
-        // deques for searching
-        std::deque<Location> captain_deque;
-        std::deque<Location> firstmate_deque;
-
-        // private functions that do work for public "read_map()":
-        // read input for a list file
-        void read_list_file();
-        // read input from a map file
-        void read_map_file();
-        // calculate path length
-        int calculate_path_length();
-
-
-    public:
         // ctor
         Hunt(std::string hunt_order_in, std::string captain_type_in, std::string firstmate_type_in, bool verbose_on_in, 
         bool show_path_on_in, bool stats_on_in, char path_type_in);
@@ -101,11 +103,11 @@ class Hunt {
         // search function
         void search();
         //  searches using a deque
-        void deque_search(bool deque_type);
-        void check_adjacents_captain();
+        void deque_search(bool deque_type, std::deque<Location> &captain_deque, std::deque<Location> &firstmate_deque);
+        void check_adjacents_captain(std::deque<Location> &captain_deque, std::deque<Location> &firstmate_deque);
             
         // change to look for treasure, ignore water, etc. 
-        void check_adjacents_firstmate();
+        void check_adjacents_firstmate(std::deque<Location> &firstmate_deque);
 
         void treasure_has_been_found(Location treasure_direction, Location came_from_spot, bool initial_land);
             
