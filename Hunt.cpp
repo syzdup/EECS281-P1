@@ -160,9 +160,15 @@ void Hunt::search() {
     if(show_path_on && treasure_found) {
         if(path_type == 'M') {
             Location visit{treasure_r, treasure_c};
-            Location start{-1, -1};
+
             grid[treasure_r][treasure_c].spot_type = 'X'; 
-            while(grid[visit.r][visit.c].came_from != start) {
+            while((visit.r != start_r) || (visit.c != start_c)) {
+                // std::cout << "Current location: " << visit.r << "," << visit.c << "\n";
+                // Location came_from_location = grid[visit.r][visit.c].came_from;
+                // std::cout << "Came from: " << came_from_location.r << "," << came_from_location.c << "\n";
+                if(grid[visit.r][visit.c].came_from == start_loc) {
+                    break;
+                }
                 if(grid[visit.r][visit.c].came_from == north) {
                     visit.r -= 1;
                     if(grid[visit.r][visit.c].came_from == north) {
@@ -196,7 +202,7 @@ void Hunt::search() {
                     path_length += 1;
                 }
             }
-            grid[visit.r][visit.c].spot_type = '@';
+            grid[start_r][start_c].spot_type = '@';
             print_map();
         } else if(path_type == 'L') {
             std::cout << "Sail:\n";
@@ -209,35 +215,41 @@ void Hunt::search() {
             } else {
                 path.reserve(path_length + 1);
             }
-            while(grid[visit.r][visit.c].came_from != start) {
-                if(grid[visit.r][visit.c].came_from == north) {
-                    path.push_back(visit);
-                    visit.r -= 1;
-        
-                } else if(grid[visit.r][visit.c].came_from == south) {
-                    path.push_back(visit);
-                    visit.r += 1;
-                    
-                } else if(grid[visit.r][visit.c].came_from == east) {
-                    path.push_back(visit);
-                    visit.c += 1;
-                    
-                } else if(grid[visit.r][visit.c].came_from == west) {
-                    path.push_back(visit);
-                    visit.c -= 1;
-                    
-                }
-            }
-            path.push_back(starting_pos);
-            bool search_print = false;
-            for(int i = int(path.size() - 1); i >= 0; --i) {
-                if(!search_print) {
-                    if(grid[path[i].r][path[i].c].spot_type == 'o') {
-                    std::cout << "Search:\n";
-                    search_print = true;
+            if(path_length == 0) {
+                std::cout << start_r << "," << start_c << "\n";
+                std::cout << "Search:\n" << treasure_r << "," << treasure_c << "\n";
+            } else {
+
+                while(grid[visit.r][visit.c].came_from != start) {
+                    if(grid[visit.r][visit.c].came_from == north) {
+                        path.push_back(visit);
+                        visit.r -= 1;
+            
+                    } else if(grid[visit.r][visit.c].came_from == south) {
+                        path.push_back(visit);
+                        visit.r += 1;
+                        
+                    } else if(grid[visit.r][visit.c].came_from == east) {
+                        path.push_back(visit);
+                        visit.c += 1;
+                        
+                    } else if(grid[visit.r][visit.c].came_from == west) {
+                        path.push_back(visit);
+                        visit.c -= 1;
+                        
                     }
                 }
-                std::cout << path[i].r << "," << path[i].c << "\n";
+                path.push_back(starting_pos);
+                bool search_print = false;
+                for(int i = int(path.size() - 1); i >= 0; --i) {
+                    if(!search_print) {
+                        if(grid[path[i].r][path[i].c].spot_type == 'o') {
+                        std::cout << "Search:\n";
+                        search_print = true;
+                        }
+                    }
+                    std::cout << path[i].r << "," << path[i].c << "\n";
+                }
             }
         }
     }
@@ -292,6 +304,10 @@ void Hunt::deque_search(bool deque_type) {
         went_ashore += 1;
 
         while(!firstmate_deque.empty()) {
+            // RUNS IF FIRST TILE FOUND IS TREASURE
+            if(!treasure_found && grid[firstmate_location.r][firstmate_location.c].spot_type == '$') {
+                treasure_has_been_found(firstmate_location, grid[firstmate_location.r][firstmate_location.c].came_from, true);
+            }
             // RUNS IF QUEUE BEING USED
             if(deque_type == true) {
                 firstmate_location = firstmate_deque.front();
@@ -454,15 +470,7 @@ void Hunt::check_adjacents_firstmate() {
             }
                 if(firstmate_location.r + north.r >= 0) {
                     if(grid[firstmate_location.r + north.r][firstmate_location.c].spot_type == '$') {
-                        land_locations += 1;
-                        grid[firstmate_location.r + north.r][firstmate_location.c].came_from = south;
-                        treasure_r = firstmate_location.r + north.r;
-                        treasure_c = firstmate_location.c;
-                        if(verbose_on) {
-                            std::cout << "party found treasure at " << firstmate_location.r + north.r << "," << firstmate_location.c << ".\n";
-                        }
-                        treasure_found = true;
-                        search_ended = true;
+                        treasure_has_been_found(north, south, false);
                         break;
                     }
                     if((grid[firstmate_location.r + north.r][firstmate_location.c].came_from == no_where) && (grid[firstmate_location.r + north.r][firstmate_location.c].spot_type != '#') 
@@ -479,15 +487,7 @@ void Hunt::check_adjacents_firstmate() {
                 }
                 if(firstmate_location.c + east.c < map_size) {
                     if(grid[firstmate_location.r][firstmate_location.c + east.c].spot_type == '$') {
-                        land_locations += 1;
-                        grid[firstmate_location.r][firstmate_location.c + east.c].came_from = west;
-                        treasure_r = firstmate_location.r;
-                        treasure_c = firstmate_location.c + east.c;
-                        if(verbose_on) {
-                            std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c + east.c << ".\n";
-                        }
-                        treasure_found = true;
-                        search_ended = true;
+                        treasure_has_been_found(east, west, false);
                         break;
                     }
                     if((grid[firstmate_location.r][firstmate_location.c + east.c].came_from == no_where) && (grid[firstmate_location.r][firstmate_location.c + east.c].spot_type != '#') 
@@ -504,15 +504,7 @@ void Hunt::check_adjacents_firstmate() {
                 }
                 if(firstmate_location.r + south.r < map_size) {
                     if(grid[firstmate_location.r + south.r][firstmate_location.c].spot_type == '$') {
-                        land_locations += 1;
-                        grid[firstmate_location.r + south.r][firstmate_location.c].came_from = north;
-                        treasure_r = firstmate_location.r + south.r;
-                        treasure_c = firstmate_location.c;
-                        if(verbose_on) {
-                            std::cout << "party found treasure at " << firstmate_location.r + south.r << "," << firstmate_location.c << ".\n";
-                        }
-                        treasure_found = true;
-                        search_ended = true;
+                        treasure_has_been_found(south, north, false);
                         break;
                     }
                     if((grid[firstmate_location.r + south.r][firstmate_location.c].came_from == no_where) && (grid[firstmate_location.r + south.r][firstmate_location.c].spot_type != '#') 
@@ -529,15 +521,7 @@ void Hunt::check_adjacents_firstmate() {
                 }
                 if(firstmate_location.c + west.c >= 0) {
                     if(grid[firstmate_location.r][firstmate_location.c + west.c].spot_type == '$') {
-                        land_locations += 1;
-                        grid[firstmate_location.r][firstmate_location.c + west.c].came_from = east;
-                        treasure_r = firstmate_location.r;
-                        treasure_c = firstmate_location.c + west.c;
-                        if(verbose_on) {
-                            std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c + west.c << ".\n";
-                        }
-                        treasure_found = true;
-                        search_ended = true;
+                        treasure_has_been_found(west, east, false);
                         break;
                     }
                     if((grid[firstmate_location.r][firstmate_location.c + west.c].came_from == no_where) && (grid[firstmate_location.r][firstmate_location.c + west.c].spot_type != '#') 
@@ -554,4 +538,26 @@ void Hunt::check_adjacents_firstmate() {
                 break;
         }
     }
+}
+
+void Hunt::treasure_has_been_found(Location treasure_direction, Location came_from_spot, bool initial_land) {
+    land_locations += 1;
+    if(initial_land) {
+        grid[firstmate_location.r][firstmate_location.c].came_from = grid[current_location.r][current_location.c].came_from;
+        treasure_r = firstmate_location.r;
+        treasure_c = firstmate_location.c;
+        if(verbose_on) {
+            std::cout << "party found treasure at " << firstmate_location.r << "," << firstmate_location.c << ".\n";
+        }
+    } else {
+        grid[firstmate_location.r + treasure_direction.r][firstmate_location.c + treasure_direction.c].came_from = came_from_spot;
+        treasure_r = firstmate_location.r + treasure_direction.r;
+        treasure_c = firstmate_location.c + treasure_direction.c;
+        if(verbose_on) {
+            std::cout << "party found treasure at " << firstmate_location.r + treasure_direction.r << "," << firstmate_location.c + treasure_direction.c << ".\n";
+        }
+    }
+
+    treasure_found = true;
+    search_ended = true;
 }

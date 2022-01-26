@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/hunt_debug",
-            "args": ["-v", "-s", "-p", "L", "-c", "QUEUE","-o", "NESW" ,"<", "${workspaceFolder}/test-1-vspLcQUEUE.txt"],
+            "args": ["-v", "-s", "-p", "M","-o", "NESW" ,"<", "${workspaceFolder}/test-5-vspM.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

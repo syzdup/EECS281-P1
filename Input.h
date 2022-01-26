@@ -73,19 +73,14 @@ public:
                 // TODO: check if show path has been specified multiple times
                 hunt_order = optarg;
                 // sorting is necessary for unique test
-                temp = hunt_order;
-                std::sort(temp.begin(), temp.end());
-                // check that there are only 4 chars and each is unique
-                // TODO: come back and simplify logic somehow. seems messy and first if statement should break before checking each char 
-                if(hunt_order.length() != 4 || std::unique(hunt_order.begin(), hunt_order.end()) != hunt_order.end()) {
-                    valid_nesw = false;
-                }
+                temp = "";
                 // check they are the right chars 
                 for(char a: hunt_order) {
-                    if(a != 'N' && a != 'E' && a != 'S' && a != 'W') {
+                    if(((a != 'N') && (a != 'E') && (a != 'S') && (a != 'W')) || (temp.find(a) != std::string::npos)) {
                         valid_nesw = false;
                         break;
                     }
+                    temp += a;
                 }
                 if(!valid_nesw) {
                     std::cerr << "Invalid argument to --hunt-order\n";

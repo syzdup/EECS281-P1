@@ -42,11 +42,12 @@ class Hunt {
             int c;
         };
         // directions with pairs that change row and column 
-        Location north{-1, 0};
-        Location east{0, 1};
-        Location south{1, 0};
-        Location west{0, -1};
-        Location no_where{0, 0};
+        const Location north{-1, 0};
+        const Location east{0, 1};
+        const Location south{1, 0};
+        const Location west{0, -1};
+        const Location no_where{0, 0};
+        Location start_loc{-1,-1};
 
         // represents where you are
         Location current_location;
@@ -105,6 +106,8 @@ class Hunt {
             
         // change to look for treasure, ignore water, etc. 
         void check_adjacents_firstmate();
+
+        void treasure_has_been_found(Location treasure_direction, Location came_from_spot, bool initial_land);
             
         // compare locations
         friend bool operator==(const Location &lhs, const Location &rhs) { if((lhs.r == rhs.r) && (lhs.c == rhs.c)) { return true; } return false; }
