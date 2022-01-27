@@ -16,8 +16,8 @@ class Hunt {
         int current_c;
 
         // firstmate coords
-        int firstmate_r;
-        int firstmate_c;
+        // int firstmate_r;
+        // int firstmate_c;
 
         // treasure found?
         bool treasure_found = false;
@@ -29,8 +29,8 @@ class Hunt {
 
         // ctor vars
         std::string hunt_order;
-        std::string captain_type;
-        std::string firstmate_type;
+        bool captain_type;
+        bool firstmate_type;
         bool verbose_on;
         bool show_path_on;
         bool stats_on;
@@ -41,10 +41,10 @@ class Hunt {
         // vector<vector<point>> 
         // point: struct with land_type, been_visited
         // file will be map or list of grid coords
-
-        // deques for searching
-        // std::deque<Location> captain_deque;
-        // std::deque<Location> firstmate_deque;
+        struct Location {
+            int r;
+            int c;
+        };
 
         // private functions that do work for public "read_map()":
         // read input for a list file
@@ -56,19 +56,15 @@ class Hunt {
 
 
     public:
-        // create 4 directions, change r and c based on the heading indicated
-        struct Location {
-            int r;
-            int c;
-        };
-
         // directions with pairs that change row and column 
-        const Location north{-1, 0};
-        const Location east{0, 1};
-        const Location south{1, 0};
-        const Location west{0, -1};
-        const Location no_where{0, 0};
-        Location start_loc{-1,-1};
+        /* 
+           came from start = A
+           came from nowhere = B
+           came from north = N
+           came from east = E
+           came from south = S
+           came from west = W
+        */
 
         // represents where you are
         Location current_location;
@@ -89,12 +85,12 @@ class Hunt {
 
         struct Spot {
             char spot_type;
-            Location came_from{0, 0};
+            char came_from = 'B';
         };
 
         std::vector<std::vector<Spot>> grid;
         // ctor
-        Hunt(std::string hunt_order_in, std::string captain_type_in, std::string firstmate_type_in, bool verbose_on_in, 
+        Hunt(std::string hunt_order_in, bool captain_type_in, bool firstmate_type_in, bool verbose_on_in, 
         bool show_path_on_in, bool stats_on_in, char path_type_in);
         // calls other functions based on whether it is in list or map format
         void read_map();
@@ -109,10 +105,6 @@ class Hunt {
         // change to look for treasure, ignore water, etc. 
         void check_adjacents_firstmate(std::deque<Location> &firstmate_deque);
 
-        void treasure_has_been_found(Location treasure_direction, Location came_from_spot, bool initial_land);
-            
-        // compare locations
-        friend bool operator==(const Location &lhs, const Location &rhs) { if((lhs.r == rhs.r) && (lhs.c == rhs.c)) { return true; } return false; }
-        friend bool operator!=(const Location &lhs, const Location &rhs) { return !(lhs == rhs); }
+        void treasure_has_been_found(char treasure_direction, char came_from_spot, bool initial_land);
 };
 #endif
