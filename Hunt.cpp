@@ -60,7 +60,7 @@ int Hunt::calculate_path_length() {
     // start backtracing algorithm
     Location visit{treasure_r, treasure_c};
     while(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from != 'A') {
-        if(grid[(unsigned long)visit.r][(unsigned long)visit.r].came_from == 'N') {
+        if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'N') {
             visit.r -= 1;
         } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'S') {
             visit.r += 1;
@@ -218,20 +218,20 @@ void Hunt::search() {
                 std::cout << "Search:\n" << treasure_r << "," << treasure_c << "\n";
             } else {
 
-                while(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from != -1) {
-                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 1) {
+                while(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from != 'A') {
+                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'N') {
                         path.push_back(visit);
                         visit.r -= 1;
             
-                    } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 3) {
+                    } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'S') {
                         path.push_back(visit);
                         visit.r += 1;
                         
-                    } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 2) {
+                    } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'E') {
                         path.push_back(visit);
                         visit.c+= 1;
                         
-                    } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 4) {
+                    } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'W') {
                         path.push_back(visit);
                         visit.c -= 1;
                     }
@@ -240,7 +240,7 @@ void Hunt::search() {
                 bool search_print = false;
                 for(int i = int(path.size() - 1); i >= 0; --i) {
                     if(!search_print) {
-                        if(grid[(unsigned long)path[(unsigned long)i].r][(unsigned long)path[(unsigned long)i].c].spot_type == 'o' || grid[(unsigned long)path[(unsigned long)i].r][(unsigned long)path[(unsigned long)i].c].spot_type == '$') {
+                        if(grid[(unsigned long)path[(unsigned long)i].r][(unsigned long)path[(unsigned long)i].c].spot_type == 'o' || grid[(unsigned long)path[(unsigned long)i].r][(unsigned long)path[(unsigned long)i].c].spot_type == '$') {        
                         std::cout << "Search:\n";
                         search_print = true;
                         }
@@ -358,7 +358,7 @@ void Hunt::check_adjacents_captain(std::deque<Location> &captain_deque, std::deq
                             search_party = true;
                             // new location to be pushed to stack/queue
                             Location new_land{current_location.r -1, current_location.c};
-                            grid[(unsigned long)new_land.r][(unsigned long)new_land.c].came_from = 3;
+                            grid[(unsigned long)new_land.r][(unsigned long)new_land.c].came_from = 'S';
                             firstmate_location = new_land;
                             firstmate_deque.push_back(new_land);
                             if(firstmate_type) {
