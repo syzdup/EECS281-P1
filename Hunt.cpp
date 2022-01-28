@@ -121,7 +121,7 @@ void Hunt::search() {
 
     // seeding the container
     captain_deque.push_back(current_location);
-    grid[(unsigned long)current_location.r][(unsigned long)current_location.c].came_from = -1;
+    grid[(unsigned long)current_location.r][(unsigned long)current_location.c].came_from = 'A';
     // only set these in order to keep track for stats
     start_r = current_location.r;
     start_c = current_location.c;
@@ -164,33 +164,33 @@ void Hunt::search() {
 
             grid[(unsigned long)treasure_r][(unsigned long)treasure_c].spot_type = 'X'; 
             while((visit.r != start_r) || (visit.c != start_c)) {
-                if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == -1) {
+                if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'A') {
                     break;
                 }
-                if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 1) {
+                if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'N') {
                     visit.r -= 1;
-                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 1) {
+                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'N') {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '|';
                     } else {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '+';
                     }
-                } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 3) {
+                } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'S') {
                     visit.r += 1;
-                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 3) {
+                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'S') {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '|';
                     } else {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '+';
                     }
-                } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 2) {
+                } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'E') {
                     visit.c += 1;
-                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 2) {
+                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'E') {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '-';
                     } else {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '+';
                     }
-                } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 4) {
+                } else if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'W') {
                     visit.c -= 1;
-                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 4) {
+                    if(grid[(unsigned long)visit.r][(unsigned long)visit.c].came_from == 'W') {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '-';
                     } else {
                         grid[(unsigned long)visit.r][(unsigned long)visit.c].spot_type = '+';

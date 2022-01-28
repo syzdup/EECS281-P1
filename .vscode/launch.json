@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
-            "type": "lldb",
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/hunt_debug",
-            "args": ["-v", "-s", "-p", "M","-c", "QUEUE" ,"<", "${workspaceFolder}/appA.map.txt"],
+            "args": ["-v", "-s", "-p", "M","-o", "NESW" ,"<", "${workspaceFolder}/test-5-vspM.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
